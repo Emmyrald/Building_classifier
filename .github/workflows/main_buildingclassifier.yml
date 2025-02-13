@@ -22,7 +22,7 @@ jobs:
       - name: Set up Python version
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.10'
 
       - name: Create and start virtual environment
         run: |
@@ -35,7 +35,9 @@ jobs:
       # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
 
       - name: Zip artifact for deployment
-        run: zip release.zip ./* -r
+        run: zip -r release.zip . -x "venv/*" ".git/*" ".github/*" "*.pyc" "__pycache__/*"
+
+
 
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
@@ -62,7 +64,8 @@ jobs:
           name: python-app
 
       - name: Unzip artifact for deployment
-        run: unzip release.zip
+        run: unzip release.zip -d ${{ github.workspace }}/app
+
 
       
       - name: Login to Azure
@@ -78,4 +81,6 @@ jobs:
         with:
           app-name: 'buildingclassifier'
           slot-name: 'Production'
+          package: ./app
+
           
